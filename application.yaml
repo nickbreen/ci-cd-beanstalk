@@ -1,0 +1,105 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Elastic Beanstalk application in the Default VPC
+
+Parameters:
+  ebSourceBundleBucket:
+    Type: String
+    Description: S3 bucket where a version of the application's source bundle is stored
+    Default: elasticbeanstalk-samples
+  ebSourceBundleKey:
+    Type: String
+    Description: S3 key of a version of the application's source bundle is stored
+    Default: java-sample-app.zip
+
+Outputs:
+  URL:
+    Description: URL of the Elastic Beanstalk environment
+    Value: !GetAtt ebEnvironment.EndpointURL
+
+Resources:
+
+  ebApplication:
+    Type: AWS::ElasticBeanstalk::Application
+    Description: |
+      Specify the name (or let it generate a name) of the Elastic Beanstalk application. Best let it generate one, so
+      that we can start multiple stacks with the same template.
+      
+      Optionally describe the application.
+      Optionally configure a lifecycle policy to control the deletion of the application's versions.
+    Properties:
+      Description: Example Elastic Beanstalk application
+
+  ebApplicationVersion:
+    Type: AWS::ElasticBeanstalk::ApplicationVersion
+    Description: |
+      Link a version of the application's code to the application.
+      
+      Describe the version, probably with a commit reference and a build number and timestamp etc.
+      
+      The SourceBundle property is required. It is a reference to the S3 bucket and key where the actual code is stored.
+      The bucket must be a regional bucket, not a global bucket.
+    Properties:
+      ApplicationName: !Ref ebApplication
+      Description: Example Java application version N
+      SourceBundle:
+        S3Bucket: !Sub "${ebSourceBundleBucket}-${AWS::Region}"
+        S3Key: !Ref ebSourceBundleKey
+
+  ebEnvironment:
+    Type: AWS::ElasticBeanstalk::Environment
+    Description: |
+      Link a version of the application's code to an "environment" to host it. Define various settings for the environment.
+      
+      The exact OptionSettings depend on the SolutionStackName and the type of application. See https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/command-options-general.html
+      This example is the minimal set of settings for a Java application deployed on a LoadBalanced environment.
+    Properties:
+      ApplicationName: !Ref ebApplication
+      Description: Example Java environment
+      SolutionStackName: "64bit Amazon Linux 2023 v4.2.4 running Corretto 11"
+      VersionLabel: !Ref ebApplicationVersion
+      OptionSettings:
+        - Namespace: aws:autoscaling:launchconfiguration
+          OptionName: IamInstanceProfile
+          Value: !Ref ebInstanceProfile
+        - Namespace: aws:ec2:instances
+          OptionName: InstanceTypes
+          Value: t4g.nano
+        - Namespace: aws:elasticbeanstalk:environment
+          OptionName: EnvironmentType
+          Value: LoadBalanced
+        - Namespace: aws:elasticbeanstalk:application:environment
+          OptionName: PORT
+          Value: "5000"
+
+  ebInstanceRole:
+    Type: AWS::IAM::Role
+    Description: |
+        Create a role for EC2 instances in the Elastic Beanstalk environment to assume.
+        
+        The role must have a trust policy that allows EC2 instances to assume it.
+        The role must have a managed policy that grants the permissions needed by the Elastic Beanstalk environment.
+      
+        This was copied from https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/quickref-elasticbeanstalk.html
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - ec2.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Description: Beanstalk EC2 role
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AWSElasticBeanstalkWebTier
+        - arn:aws:iam::aws:policy/AWSElasticBeanstalkMulticontainerDocker
+        - arn:aws:iam::aws:policy/AWSElasticBeanstalkWorkerTier
+
+  ebInstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Description: |
+      Create an instance profile for EC2 instances in the Elastic Beanstalk environment to assume.
+    Properties:
+      Roles:
+        - !Ref ebInstanceRole

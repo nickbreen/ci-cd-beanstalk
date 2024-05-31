@@ -1,3 +1,4 @@
 java-sample-app.d/
 java-sample-app.zip
 .venv/
+.idea/
