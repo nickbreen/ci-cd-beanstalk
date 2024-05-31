@@ -3,7 +3,7 @@ version: 0.2
 phases:
   build:
     commands:
-      - aws s3 cp s3://elasticbeanstalk-samples-${AWS_REGION}/java-sample-app.zip .
+      - aws s3 cp s3://elasticbeanstalk-samples-ap-southeast-2/java-sample-app.zip .
 artifacts:
   files:
     - java-sample-app.zip
