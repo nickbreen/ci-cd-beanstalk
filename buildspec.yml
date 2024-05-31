@@ -3,6 +3,8 @@ version: 0.2
 phases:
   build:
     commands:
+      - echo "${AWS_REGION}"
+      - aws sts get-caller-identity --query 'Region' --output text
       - aws s3 cp s3://elasticbeanstalk-samples-ap-southeast-2/java-sample-app.zip .
 artifacts:
   files:
