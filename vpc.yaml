@@ -1,0 +1,49 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: AWS CloudFormation Template for creating a VPC for an Elastic Beanstalk application
+
+Outputs:
+  vpc:
+    Value: !Ref vpc
+  asgSubnet:
+    Value: !Ref vpcAsgSubnet
+  elbSubnet:
+    Value: !Ref vpcElbSubnet
+
+Resources:
+  vpc:
+    Type: AWS::EC2::VPC
+    Properties:
+        CidrBlock: 10.0.0.0/16
+
+  vpcInternetGateway:
+    Type: AWS::EC2::InternetGateway
+
+  vpcGatewayAttachment:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+        VpcId: !Ref vpc
+        InternetGatewayId: !Ref vpcInternetGateway
+
+  vpcElbSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+        VpcId: !Ref vpc
+        CidrBlock: 10.0.0.0/24
+
+  vpcAsgSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref vpc
+      CidrBlock: 10.0.1.0/24
+
+  vpcRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref vpc
+
+  vpcRoute:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref vpcRouteTable
+      GatewayId: !Ref vpcInternetGateway
+      DestinationCidrBlock: 0.0.0.0/0
