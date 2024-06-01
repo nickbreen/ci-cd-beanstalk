@@ -2,7 +2,7 @@ version: 0.2
 
 env:
   variables:
-    src: s3://#{bucket}/#{key}
+    src: #{src}
 
 phases:
   build:
