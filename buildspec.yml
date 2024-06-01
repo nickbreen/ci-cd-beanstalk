@@ -3,7 +3,15 @@ version: 0.2
 phases:
   build:
     commands:
-      - aws s3 cp s3://elasticbeanstalk-samples-${AWS_REGION}/java-sample-app.zip app.zip
+      - aws s3 cp s3://elasticbeanstalk-samples-${AWS_REGION}/java-sample-app.zip java-sample-app.zip
+      - unzip java-sample-app.zip -d java-sample-app.d
+      - cat Procfile
+      - cat Buildfile
 artifacts:
+  base-directory: java-sample-app.d
   files:
-    - app.zip
+    - "**/*"
+# CodeDeploy for ElasticBeanstalk expects a directory of files to deploy, not a ZIP file. Apparently it will ZIP it up itself.
+# Specifically the Buildfile and Procfile must be in the root of the artifacts listed here.
+
+# The docs imply that one can provide just an uber-JAR. We shall see.
