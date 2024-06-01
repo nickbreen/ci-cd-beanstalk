@@ -1,10 +1,14 @@
 version: 0.2
 
+env:
+  variables:
+    src: s3://#{bucket}/#{key}
+
 phases:
   build:
     commands:
-      - echo "${AWS_REGION}"
-      - aws s3 cp s3://#{bucket}/#{key} app.zip
+      - echo "${AWS_REGION}" "${src}"
+      - aws s3 cp ${src} app.zip
 artifacts:
   files:
     - app.zip
