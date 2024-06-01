@@ -1,14 +1,9 @@
 version: 0.2
 
-env:
-  variables:
-    src: s3://#{variables.bucket}/#{variables.key}
-
 phases:
   build:
     commands:
-      - echo "${AWS_REGION}" "${src}" "#{codepipeline.PipelineExecutionId}"
-      - aws s3 cp ${src} app.zip
+      - aws s3 cp s3://${bucket?}/${key?} app.zip
 artifacts:
   files:
     - app.zip
