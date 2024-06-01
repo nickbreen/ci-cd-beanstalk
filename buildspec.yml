@@ -3,10 +3,10 @@ version: 0.2
 phases:
   build:
     commands:
+      - printenv
       - aws s3 cp s3://elasticbeanstalk-samples-${AWS_REGION}/java-sample-app.zip java-sample-app.zip
       - unzip java-sample-app.zip -d java-sample-app.d
-      - cat Procfile
-      - cat Buildfile
+      - sed -i "4s/Elastic Beanstalk/Elastic Beanstalk @ Build ${CODEBUILD_BUILD_NUMBER-???}/" java-sample-app.d/src/main/resources/index.html
 artifacts:
   base-directory: java-sample-app.d
   files:
