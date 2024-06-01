@@ -40,3 +40,9 @@ awslocal cloudformation describe-stack-events --stack-name eb1
 aws s3 cp s3://elasticbeanstalk-samples-ap-southeast-2/java-sample-app.zip .
 unzip java-sample-app.zip -d java-sample-app.d  # have a look at the contents
 ```
+
+# CodePipeline B/S
+
+```shell
+aws codepipeline start-pipeline-execution --name ${pipeline:-eb1} --variables "name=bucket,value=${bucket?}" "name=key,value=${key:-java-sample-app.zip}"
+```
