@@ -44,5 +44,5 @@ unzip java-sample-app.zip -d java-sample-app.d  # have a look at the contents
 # CodePipeline B/S
 
 ```shell
-aws codepipeline start-pipeline-execution --name ${pipeline:-eb1} --variables "name=bucket,value=${bucket?}" "name=key,value=${key:-java-sample-app.zip}"
+aws codepipeline start-pipeline-execution --name eb1
 ```
