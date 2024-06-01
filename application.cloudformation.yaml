@@ -15,6 +15,12 @@ Outputs:
   URL:
     Description: URL of the Elastic Beanstalk environment
     Value: !GetAtt ebEnvironment.EndpointURL
+  Application:
+    Description: Name of the Elastic Beanstalk application
+    Value: !Ref ebApplication
+  Environment:
+    Description: Name of the Elastic Beanstalk application's environment
+    Value: !Ref ebEnvironment
 
 Resources:
 
