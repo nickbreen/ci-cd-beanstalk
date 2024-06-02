@@ -31,19 +31,6 @@ Resources:
         Type: ARM_LAMBDA_CONTAINER
       Source:
         Type: CODEPIPELINE
-        BuildSpec: |
-          version: 0.2
-          phases:
-            build:
-              commands:
-                - aws s3 cp s3://elasticbeanstalk-samples-${AWS_REGION}/java-sample-app.zip java-sample-app.zip
-                - unzip java-sample-app.zip -d java-sample-app.d
-                - sed -i "4s/Elastic Beanstalk/Elastic Beanstalk @ Build ${CODEBUILD_BUILD_NUMBER-???}/" java-sample-app.d/src/main/resources/index.html
-                - cd java-sample-app.d && mvn assembly:assembly -DdescriptorId=jar-with-dependencies
-          artifacts:
-            base-directory: java-sample-app.d
-            files:
-              - target/sample-app-1.0-jar-with-dependencies.jar
 
   codePipeline:
     Type: AWS::CodePipeline::Pipeline
