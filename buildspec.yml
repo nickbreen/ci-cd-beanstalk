@@ -8,9 +8,9 @@ phases:
       - sed -i "/maven-assembly-plugin/ a <version>2.2</version>" java-sample-app.d/pom.xml
       - cd java-sample-app.d && mvn assembly:assembly -DdescriptorId=jar-with-dependencies
 artifacts:
-  base-directory: java-sample-app.d
+  base-directory: java-sample-app.d/target
   files:
-    - target/sample-app-1.0-jar-with-dependencies.jar
+    - sample-app-1.0-jar-with-dependencies.jar
 
 # CodeDeploy for ElasticBeanstalk expects a directory of files to deploy, not a ZIP file. Apparently it will ZIP it up itself.
 # Specifically the Buildfile and Procfile must be in the root of the artifacts listed here.
