@@ -2,12 +2,9 @@ AWSTemplateFormatVersion: '2010-09-09'
 Description: CodePipeline with S3 Source, CodeBuild, and S3 Deploy
 
 Parameters:
-  elasticBeanstalkApplicationName:
+  applicationStack:
     Type: String
-    Description: Name of the Elastic Beanstalk application
-  elasticBeanstalkEnvironmentName:
-    Type: String
-    Description: Name of the Elastic Beanstalk environment
+    Description: Name of the Elastic Beanstalk application stack
   sourceConnectionArn:
     Type: AWS::SSM::Parameter::Value<String>
     Description: ARN of the CodeStar Connection to the source repository
@@ -99,8 +96,12 @@ Resources:
               InputArtifacts:
                 - Name: BuildOutput
               Configuration:
-                ApplicationName: !Ref elasticBeanstalkApplicationName
-                EnvironmentName: !Ref elasticBeanstalkEnvironmentName
+                ApplicationName:
+                  Fn::ImportValue:
+                    !Sub "${applicationStack}-application"
+                EnvironmentName:
+                  Fn::ImportValue:
+                    !Sub "${applicationStack}-environment"
 
   codePipelineRole:
     Type: AWS::IAM::Role

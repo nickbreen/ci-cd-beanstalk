@@ -12,15 +12,19 @@ Parameters:
     Default: java-sample-app.zip
 
 Outputs:
-  URL:
+  url:
     Description: URL of the Elastic Beanstalk environment
     Value: !GetAtt ebEnvironment.EndpointURL
-  Application:
+  application:
     Description: Name of the Elastic Beanstalk application
     Value: !Ref ebApplication
-  Environment:
+    Export:
+      Name: !Sub "${AWS::StackName}-application"
+  environment:
     Description: Name of the Elastic Beanstalk application's environment
     Value: !Ref ebEnvironment
+    Export:
+      Name: !Sub "${AWS::StackName}-environment"
 
 Resources:
 
@@ -54,15 +58,24 @@ Resources:
   ebEnvironment:
     Type: AWS::ElasticBeanstalk::Environment
     Description: |
-      Link a version of the application's code to an "environment" to host it. Define various settings for the environment.
-      
-      The exact OptionSettings depend on the SolutionStackName and the type of application. See https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/command-options-general.html
-      This example is the minimal set of settings for a Java application deployed on a LoadBalanced environment.
+      Link a version of the application's code to an "environment" to host it.
     Properties:
       ApplicationName: !Ref ebApplication
       Description: Example Java environment
-      SolutionStackName: "64bit Amazon Linux 2023 v4.2.4 running Corretto 11"
       VersionLabel: !Ref ebApplicationVersion
+      TemplateName: !Ref ebConfigurationTemplate
+
+  ebConfigurationTemplate:
+    Type: AWS::ElasticBeanstalk::ConfigurationTemplate
+    Description: |
+      Define various settings for the environment.
+      The exact OptionSettings depend on the SolutionStackName and the type of application. 
+      See https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/command-options-general.html
+      This example is the minimal set of settings for a Java application deployed on a LoadBalanced environment.
+    Properties:
+      ApplicationName: !Ref ebApplication
+      Description: Example Java configuration template
+      SolutionStackName: "64bit Amazon Linux 2023 v4.2.4 running Corretto 11"
       OptionSettings:
         - Namespace: aws:autoscaling:launchconfiguration
           OptionName: IamInstanceProfile
