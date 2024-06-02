@@ -32,6 +32,7 @@ Resources:
       Source:
         Type: CODEPIPELINE
 
+
   codePipeline:
     Type: AWS::CodePipeline::Pipeline
     Properties:

@@ -9,9 +9,9 @@ phases:
       - cd java-sample-app.d && mvn assembly:assembly -DdescriptorId=jar-with-dependencies
 artifacts:
   base-directory: java-sample-app.d
+  discard-paths: yes
   files:
     - target/sample-app-1.0-jar-with-dependencies.jar
-    - Procfile
 
 # CodeDeploy for ElasticBeanstalk expects a directory of files to deploy, not a ZIP file. Apparently it will ZIP it up itself.
 # Specifically the Buildfile and Procfile must be in the root of the artifacts listed here.
